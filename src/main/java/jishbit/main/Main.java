@@ -209,7 +209,7 @@ public class Main {
         String user = message.getAuthor().getID();
         if (message.getGuild().getID().equals("73463428634648576")) {
             String zacsroom = "zgibson";
-            if (text.toLowerCase().startsWith("//color")) {
+            if (text.toLowerCase().startsWith("`color")) {
                 Roles role = Roles.getUserRole(user);
                 if (role != null) {
                     String[] args = text.split(" ");
@@ -241,7 +241,7 @@ public class Main {
                         }
                     } else {
                         try {
-                            new MessageBuilder(event.getClient()).withChannel(message.getChannel()).withCode("XL", "USAGE: //color <hex value> MUST CONTAIN #").send();
+                            new MessageBuilder(event.getClient()).withChannel(message.getChannel()).withCode("XL", "USAGE: `color <hex value> MUST CONTAIN #").send();
                         } catch (RateLimitException | DiscordException | MissingPermissionsException e) {
                             e.printStackTrace();
                         }
