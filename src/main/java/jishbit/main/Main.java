@@ -135,7 +135,11 @@ public class Main {
 		if(text.equalsIgnoreCase("good bot")) {
 			sendMessage(msg.getChannel(), ":D");
 		} else if(text.equalsIgnoreCase("bad bot")) {
-			sendMessage(msg.getChannel(), "D:");
+			if(msg.getAuthor().equals("109109946565537792")) {
+				sendMessage(msg.getChannel(), "Leave me alone troy.");
+			} else {
+				sendMessage(msg.getChannel(), "D:");
+			}
 		}
 
 	if(text.equalsIgnoreCase("<@222446374271057920>"))
