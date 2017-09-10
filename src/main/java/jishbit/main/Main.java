@@ -17,10 +17,11 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.RequestBuffer;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 
@@ -85,7 +86,7 @@ public class Main {
 		new ShutUp(this, e.getClient());
 
 		System.out.println("Connected.");
-		client.changeStatus(Status.game("Memes"));
+		client.changePlayingText("Memes");
 	}
 
 	@EventSubscriber
@@ -104,17 +105,16 @@ public class Main {
 			
 			if(cmd.equalsIgnoreCase("status")) {
 				deleteMessage(msg);
-				if(msg.getAuthor().getID().equals("73463573900173312")) {
+				if(msg.getAuthor().getStringID().equals("73463573900173312")) {
 					try {
 						String status = msg.getContent().split(" ", 2)[1];
-						client.changeStatus(Status.game(status));
+						client.changePlayingText(status);
 						sendMessage(msg.getChannel(), "Status changed to: " + status);
 					} catch(Exception e) {
 						e.printStackTrace();
 					}		
 				}
 			}
-			
 			if(cmd.equalsIgnoreCase("meme")) {
 				Submission submission = findMeme(1);
 				//return if meme finding failed
@@ -128,7 +128,20 @@ public class Main {
 				if(linkolio.contains("imgur.com") && !linkolio.matches(".+\\.[A-Za-z]{1,5}$") && !linkolio.contains("/a/") && !linkolio.contains("/gallery/")) {
 					linkolio += ".jpg";
 				}
-				sendMessage(msg.getChannel(), "*From /r/" + submission.getSubreddit() + ":* " + submission.getTitle() + "\n" + linkolio.replaceAll("&amp;", "&"));
+				EmbedBuilder builder = new EmbedBuilder();
+
+			    //builder.withAuthorName(submission.getTitle());
+			    builder.appendField(submission.getTitle(), "From: " + "[ /r/" + submission.getSubreddit() + "](https://reddit.com/r/" + submission.getSubreddit() + ")", false);
+			    //builder.withAuthorUrl("https://www.reddit.com/r/" + submission.getSubreddit());
+
+			    builder.withColor(3, 145, 18);
+			    //builder.withDescription("*From /r/" + submission.getSubreddit()+ "*");
+			    builder.withTimestamp(System.currentTimeMillis());
+			    builder.withUrl(linkolio.replaceAll("&amp;", "&"));
+			    builder.withImage(linkolio.replaceAll("&amp;", "&"));
+			    
+			    RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
+				//sendMessage(msg.getChannel(), "*From /r/" + submission.getSubreddit() + ":* " + submission.getTitle() + "\n" + linkolio.replaceAll("&amp;", "&"));
 			}
 			
 			if(cmd.equalsIgnoreCase("list")) {
@@ -139,7 +152,7 @@ public class Main {
 		if(text.equalsIgnoreCase("good bot")) {
 			sendMessage(msg.getChannel(), ":D");
 		} else if(text.equalsIgnoreCase("bad bot")) {
-			if(msg.getAuthor().getID().equals("109109946565537792")) {
+			if(msg.getAuthor().getStringID().equals("109109946565537792")) {
 				sendMessage(msg.getChannel(), "Leave me alone troy.");
 			} else {
 				sendMessage(msg.getChannel(), "D:");
@@ -211,15 +224,15 @@ public class Main {
     public void ipaaMessageEvent(MessageReceivedEvent event) {
         IMessage message = event.getMessage();
         String text = message.getContent();
-        String user = message.getAuthor().getID();
-        if (message.getGuild().getID().equals("73463428634648576")) {
+        String user = message.getAuthor().getStringID();
+        if (message.getGuild().getStringID().equals("73463428634648576")) {
             if (text.toLowerCase().startsWith("`color")) {
                 Roles role = Roles.getUserRole(user);
                 if (role != null) {
                     String[] args = text.split(" ");
                     if (args.length >= 2) {
                         String argument = args[1];
-                        Color currentColor = message.getGuild().getRoleByID(role.role).getColor();
+                        Color currentColor = message.getGuild().getRoleByID(Long.parseLong(role.role)).getColor();
                         String hexColor = Integer.toHexString(currentColor.getRGB() & 0xffffff);
                         if (hexColor.length() < 6) {
                             hexColor = "000000".substring(0, 6 - hexColor.length()) + hexColor;
@@ -227,14 +240,14 @@ public class Main {
                         if (argument.startsWith("#")) {
                             Color color = Color.decode(argument);
                             try {
-                                message.getGuild().getRoleByID(role.role).changeColor(color);
+                                message.getGuild().getRoleByID(Long.parseLong(role.role)).changeColor(color);
                             } catch (RateLimitException | DiscordException | MissingPermissionsException e) {
                                 e.printStackTrace();
                             }
-                            String target = message.getGuild().getRoleByID(role.role).mention();
+                            String target = message.getGuild().getRoleByID(Long.parseLong(role.role)).mention();
                             sendMessage(message.getChannel(), "Color for " + target + " changed from #" + hexColor.toUpperCase() + " to " + argument.toUpperCase());
                         } else if (argument.equalsIgnoreCase("current")) {
-                            String target = message.getGuild().getRoleByID(role.role).mention();
+                            String target = message.getGuild().getRoleByID(Long.parseLong(role.role)).mention();
                             sendMessage(message.getChannel(), "The current value of " + target + "'s color is #" + hexColor.toUpperCase());
                         } else {
                             try {
@@ -258,26 +271,27 @@ public class Main {
     
     @EventSubscriber
     public void userLeft(UserLeaveEvent e) {
+    	System.out.println("User left");
     	String leftGuy = e.getUser().toString();
-    	String server = e.getGuild().getID();
-    	sendMessage(e.getClient().getChannelByID(server), leftGuy + " left in salt lol.");
+    	sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), leftGuy + " left in salt lol.");
     }
     
     @EventSubscriber
     public void userJoined(UserJoinEvent e) throws DiscordException {
+    	System.out.println("User joined");
     	IUser joinGuy = e.getUser();
-    	String user = e.getUser().getID();
-    	String server = e.getGuild().getID();
-    	sendMessage(e.getClient().getChannelByID(server), "Holy fuck look who's back it's " + joinGuy.toString());
+    	String user = e.getUser().getStringID();
+    	String server = e.getGuild().getStringID();
+    	sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), "Holy fuck look who's back it's " + joinGuy.toString());
     	
     	if(server.equals("73463428634648576")) {
     		Roles role = Roles.getUserRole(user);
     		if(role != null) {
-    			IRole[] roles = {e.getGuild().getRoleByID(role.role), e.getGuild().getRoleByID(role.human)};
+    			IRole[] roles = {e.getGuild().getRoleByID(Long.parseLong(role.role)), e.getGuild().getRoleByID(Long.parseLong(role.human))};
     			try {
     				e.getGuild().editUserRoles(joinGuy, roles);
     				e.getGuild().setUserNickname(joinGuy, role.nick);
-    				sendMessage(e.getClient().getChannelByID(server), joinGuy.toString() + "'s perms were updated.");
+    				sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), joinGuy.toString() + "'s perms were updated.");
     			} catch(RateLimitException | MissingPermissionsException e1) {
     				e1.printStackTrace();
     			}
