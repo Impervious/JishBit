@@ -9,10 +9,14 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
@@ -135,19 +139,16 @@ public class Main {
 		if(text.equalsIgnoreCase("good bot")) {
 			sendMessage(msg.getChannel(), ":D");
 		} else if(text.equalsIgnoreCase("bad bot")) {
-			if(msg.getAuthor().equals("109109946565537792")) {
+			if(msg.getAuthor().getID().equals("109109946565537792")) {
 				sendMessage(msg.getChannel(), "Leave me alone troy.");
 			} else {
 				sendMessage(msg.getChannel(), "D:");
 			}
 		}
 
-	if(text.equalsIgnoreCase("<@222446374271057920>"))
-
-	{
-		sendMessage(msg.getChannel(),
-				"JishBit, the ultimate meme bot! \n Created by *Impervious* \n For a list of commands use `` `list``");
-	}
+		if(text.equalsIgnoreCase("<@222446374271057920>")) {
+			sendMessage(msg.getChannel(), "JishBit, the ultimate meme bot! \n Created by *Impervious* \n For a list of commands use `` `list``");
+		}
 	}
 
 
@@ -212,7 +213,6 @@ public class Main {
         String text = message.getContent();
         String user = message.getAuthor().getID();
         if (message.getGuild().getID().equals("73463428634648576")) {
-            String zacsroom = "zgibson";
             if (text.toLowerCase().startsWith("`color")) {
                 Roles role = Roles.getUserRole(user);
                 if (role != null) {
@@ -254,5 +254,34 @@ public class Main {
                 }
             }
         }
+    }
+    
+    @EventSubscriber
+    public void userLeft(UserLeaveEvent e) {
+    	String leftGuy = e.getUser().toString();
+    	String server = e.getGuild().getID();
+    	sendMessage(e.getClient().getChannelByID(server), leftGuy + " left in salt lol.");
+    }
+    
+    @EventSubscriber
+    public void userJoined(UserJoinEvent e) throws DiscordException {
+    	IUser joinGuy = e.getUser();
+    	String user = e.getUser().getID();
+    	String server = e.getGuild().getID();
+    	sendMessage(e.getClient().getChannelByID(server), "Holy fuck look who's back it's " + joinGuy.toString());
+    	
+    	if(server.equals("73463428634648576")) {
+    		Roles role = Roles.getUserRole(user);
+    		if(role != null) {
+    			IRole[] roles = {e.getGuild().getRoleByID(role.role), e.getGuild().getRoleByID(role.human)};
+    			try {
+    				e.getGuild().editUserRoles(joinGuy, roles);
+    				e.getGuild().setUserNickname(joinGuy, role.nick);
+    				sendMessage(e.getClient().getChannelByID(server), joinGuy.toString() + "'s perms were updated.");
+    			} catch(RateLimitException | MissingPermissionsException e1) {
+    				e1.printStackTrace();
+    			}
+    		}
+    	}
     }
 }

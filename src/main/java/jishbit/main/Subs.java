@@ -8,7 +8,11 @@ public enum Subs {
 	DM("DankMemes"),
 	TWOMEIRD4MEIRL("2meirl4meirl"),
 	PREQUEAL("prequealmemes"),
-	WHOLESOME("wholesomememes");
+	WHOLESOME("wholesomememes"),
+	GODMEMES("dankchristianmemes"),
+	IZLAM("Izlam"),
+	TREBUCHET("trebuchetmemes"),
+	MINYAN("breakawayminyan");
 
     private static final Random RNG = new Random();
 
