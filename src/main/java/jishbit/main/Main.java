@@ -271,9 +271,15 @@ public class Main {
     
     @EventSubscriber
     public void userLeft(UserLeaveEvent e) {
-    	System.out.println("User left");
-    	String leftGuy = e.getUser().toString();
-    	sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), leftGuy + " left in salt lol.");
+		String server = e.getGuild().getStringID();
+
+		if(server.equals("73463428634648576")) {
+			String leftGuy = e.getUser().toString();
+			sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), leftGuy + " left in salt lol.");
+			System.out.println("User left");
+		} else {
+			System.out.println("User left");
+		}
     }
     
     @EventSubscriber
