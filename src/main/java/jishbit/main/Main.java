@@ -150,18 +150,14 @@ public class Main {
 				}
 				EmbedBuilder builder = new EmbedBuilder();
 
-			    //builder.withAuthorName(submission.getTitle());
 			    builder.appendField(submission.getTitle(), "From: " + "[ /r/" + submission.getSubreddit() + "](https://reddit.com/r/" + submission.getSubreddit() + ")", false);
-			    //builder.withAuthorUrl("https://www.reddit.com/r/" + submission.getSubreddit());
 
 			    builder.withColor(3, 145, 18);
-			    //builder.withDescription("*From /r/" + submission.getSubreddit()+ "*");
 			    builder.withTimestamp(System.currentTimeMillis());
 			    builder.withUrl(linkolio.replaceAll("&amp;", "&"));
 			    builder.withImage(linkolio.replaceAll("&amp;", "&"));
 			    
 			    RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
-				//sendMessage(msg.getChannel(), "*From /r/" + submission.getSubreddit() + ":* " + submission.getTitle() + "\n" + linkolio.replaceAll("&amp;", "&"));
 			}
 			
 			if(cmd.equalsIgnoreCase("list")) {

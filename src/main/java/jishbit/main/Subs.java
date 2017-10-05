@@ -3,7 +3,11 @@ package jishbit.main;
 import java.util.Random;
 
 public enum Subs {
-	MEIRL("meirl"),
+
+	DOOT("ledootgeneration"),
+	SPOOK("2spooky4me");
+
+	/*MEIRL("meirl"),
 	ME_IRL("me_irl"),
 	DM("DankMemes"),
 	TWOMEIRD4MEIRL("2meirl4meirl"),
@@ -12,7 +16,7 @@ public enum Subs {
 	GODMEMES("dankchristianmemes"),
 	IZLAM("Izlam"),
 	TREBUCHET("trebuchetmemes"),
-	MINYAN("breakawayminyan");
+	MINYAN("breakawayminyan");*/
 
     private static final Random RNG = new Random();
 
