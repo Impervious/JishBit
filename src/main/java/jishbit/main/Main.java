@@ -113,8 +113,28 @@ public class Main {
 					} catch(Exception e) {
 						e.printStackTrace();
 					}		
-				}
+				} else {
+				    deleteMessage(msg);
+                    sendMessage(msg.getChannel(), "Only my daddy can change my status.");
+                }
 			}
+
+			if(cmd.equalsIgnoreCase("name")) {
+			    deleteMessage(msg);
+			    if(msg.getAuthor().getStringID().equals("73463573900173312")) {
+			        try {
+                        String name = msg.getContent().split(" ", 2)[1];
+                        client.changeUsername(name);
+                        sendMessage(msg.getChannel(), "Name changed to: " + name);
+                    } catch(Exception e) {
+			            e.printStackTrace();
+                    }
+                } else {
+			        deleteMessage(msg);
+			        sendMessage(msg.getChannel(), "Only my daddy can change my name.");
+                }
+            }
+
 			if(cmd.equalsIgnoreCase("meme")) {
 				Submission submission = findMeme(1);
 				//return if meme finding failed
