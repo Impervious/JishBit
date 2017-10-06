@@ -8,14 +8,17 @@ import com.github.jreddit.utils.restclient.RestClient;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
+import sx.blah.discord.handle.impl.obj.ReactionEmoji;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,8 +150,13 @@ public class Main {
 			    builder.withTimestamp(System.currentTimeMillis());
 			    builder.withUrl(linkolio.replaceAll("&amp;", "&"));
 			    builder.withImage(linkolio.replaceAll("&amp;", "&"));
-			    
-			    RequestBuffer.request(() -> event.getChannel().sendMessage(builder.build()));
+
+                IMessage ourMessage = sendEmbed(event.getChannel(), builder.build());
+
+                ReactionEmoji dootdoot = ReactionEmoji.of("dootdoot", 304371941752700930l);
+                ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
+                RequestBuffer.request(() -> ourMessage.addReaction(downdoot));
+                RequestBuffer.request(() -> ourMessage.addReaction(dootdoot));
 			}
 			
 			if(cmd.equalsIgnoreCase("list")) {
@@ -170,6 +178,39 @@ public class Main {
 			Util.sendMessage(msg.getChannel(), "JishBit, the ultimate meme bot! \n Created by *Impervious* \n For a list of commands use `` `list``");
 		}
 	}
+
+    public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
+        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
+            try {
+                return new MessageBuilder(client).withEmbed(embedObject).withChannel(channel).send();
+            } catch (MissingPermissionsException | DiscordException e) {
+                e.printStackTrace();
+            }
+            return null;
+         });
+        return future.get();
+	}
+
+    @EventSubscriber
+    public void onReactEvent(ReactionAddEvent event) {
+        IMessage message = event.getMessage();
+        IUser author = event.getAuthor();
+        IUser reacter = event.getUser();
+        if (author.getStringID().equals(client.getOurUser().getStringID()) && !reacter.isBot()) { //if message reacted to is from the bot
+            ReactionEmoji emojiUsed = event.getReaction().getEmoji();
+            ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
+            if (emojiUsed.getLongID() == downdoot.getLongID()) {
+                System.out.println("Downdoot detected");
+                System.out.println(event.getCount());
+                int count = event.getMessage().getReactionByEmoji(downdoot).getCount() - 1;
+                if (count >= 2) {
+                    System.out.println(count);
+                    Util.deleteMessage(message);
+                    Util.sendMessage(event.getChannel(), "Deleted that weak meme.");
+                }
+            }
+        }
+    }
 
 	/**
 	 * Recursive function to find a random meme

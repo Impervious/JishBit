@@ -44,7 +44,7 @@ public class ShutUp {
 
             if (cmd.equalsIgnoreCase("shutup")) {
                 if(!shutUpMode) {
-                    main.deleteMessage(msg);
+                    Util.deleteMessage(msg);
                     Optional<IVoiceChannel> connectedChannel = getUserVoiceChannel(event.getAuthor(), event.getGuild());
                     if (connectedChannel.isPresent()) {
                         shutUpMode = true;
@@ -65,7 +65,7 @@ public class ShutUp {
                 }
             }
             if (cmd.equalsIgnoreCase("noshutup")) {
-                main.deleteMessage(msg);
+                Util.deleteMessage(msg);
                 if(shutUpChannel != null) shutUpChannel.leave();
                 noShutUp();
             }
