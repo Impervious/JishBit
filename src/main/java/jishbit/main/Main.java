@@ -12,6 +12,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -102,7 +103,18 @@ public class Main {
 
 		if(text.startsWith("`")) {
 			String cmd = text.substring(1).split(" ")[0].toLowerCase();
-			
+
+			if(cmd.equalsIgnoreCase("test")) {
+				if(msg.getAuthor().getStringID().equals("73463573900173312")) {
+					ReactionEmoji reaction = ReactionEmoji.of("dootdoot", 304371941752700930L);
+					sendMessage(msg.getChannel(), "ayy yo");
+					RequestBuffer.request(() -> msg.addReaction(reaction));
+				} else {
+					deleteMessage(msg);
+					sendMessage(msg.getChannel(), "who tf do you think you are?");
+				}
+			}
+
 			if(cmd.equalsIgnoreCase("status")) {
 				deleteMessage(msg);
 				if(msg.getAuthor().getStringID().equals("73463573900173312")) {
