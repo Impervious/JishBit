@@ -12,6 +12,7 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionEvent;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
@@ -192,7 +193,7 @@ public class Main {
 	}
 
     @EventSubscriber
-    public void onReactEvent(ReactionAddEvent event) {
+    public void onReactEvent(ReactionEvent event) {
         IMessage message = event.getMessage();
         IUser author = event.getAuthor();
         IUser reacter = event.getUser();
