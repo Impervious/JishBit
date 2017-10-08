@@ -11,7 +11,6 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionEvent;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
@@ -194,23 +193,23 @@ public class Main {
 
     @EventSubscriber
     public void onReactEvent(ReactionEvent event) {
-        IMessage message = event.getMessage();
-        IUser author = event.getAuthor();
-        IUser reacter = event.getUser();
-        if (author.getStringID().equals(client.getOurUser().getStringID()) && !reacter.isBot()) { //if message reacted to is from the bot
-            ReactionEmoji emojiUsed = event.getReaction().getEmoji();
-            ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
-            if (emojiUsed.getLongID() == downdoot.getLongID()) {
-                System.out.println("Downdoot detected");
-                System.out.println(event.getCount());
-                int count = event.getMessage().getReactionByEmoji(downdoot).getCount() - 1;
-                if (count >= 2) {
-                    System.out.println(count);
-                    Util.deleteMessage(message);
-                    Util.sendMessage(event.getChannel(), "Deleted that weak meme.");
-                }
-            }
-        }
+		if(event.getReaction() != null) {
+			IMessage message = event.getMessage();
+			IUser author = event.getAuthor();
+			IUser reacter = event.getUser();
+			int count = event.getReaction().getUsers().size(); //workaround because event.getCount() is broke af
+			if (author.getStringID().equals(client.getOurUser().getStringID()) && !reacter.isBot()) { //if message reacted to is from the bot
+				ReactionEmoji emojiUsed = event.getReaction().getEmoji();
+				ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
+				if (emojiUsed.getLongID() == downdoot.getLongID()) {
+					if (count >= 3) {
+						System.out.println(count);
+						Util.deleteMessage(message);
+						Util.sendMessage(event.getChannel(), "Deleted that weak meme.");
+					}
+				}
+			}
+		}
     }
 
 	/**
