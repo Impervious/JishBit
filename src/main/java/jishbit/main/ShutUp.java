@@ -18,22 +18,19 @@ import java.util.Optional;
 
 public class ShutUp {
 
-    public static final File SHUTUP_SOUND = new File(Util.botPath, "shutup.mp3");
+    private static final File SHUTUP_SOUND = new File(Util.botPath, "shutup.mp3");
 
-    public IDiscordClient bot;
-    public Main main;
+    private IDiscordClient bot;
 
-    public boolean shutUpMode = false;
-    public IVoiceChannel shutUpChannel;
-    public List<String> speakingUsers = new ArrayList<>();
+    private boolean shutUpMode = false;
+    private IVoiceChannel shutUpChannel;
+    private List<String> speakingUsers = new ArrayList<>();
 
-    public ShutUp(Main main, IDiscordClient bot) {
-        this.main = main;
+    ShutUp(IDiscordClient bot) {
         this.bot = bot;
         bot.getDispatcher().registerListener(this);
     }
 
-    @SuppressWarnings("static-access")
 	@EventSubscriber
     public void onMessageEvent(MessageReceivedEvent event) {
         IMessage msg = event.getMessage();
@@ -105,19 +102,19 @@ public class ShutUp {
         }
     }
 
-    public static Optional<IVoiceChannel> getUserVoiceChannel(IUser user, IGuild guild){
-        Optional<IVoiceState> state = user.getVoiceStatesLong().values().stream().filter(voiceState -> voiceState.getGuild().equals(guild)).findAny();
+    private static Optional<IVoiceChannel> getUserVoiceChannel(IUser user, IGuild guild){
+        Optional<IVoiceState> state = user.getVoiceStates().values().stream().filter(voiceState -> voiceState.getGuild().equals(guild)).findAny();
         if(state.isPresent())
             return Optional.ofNullable(state.get().getChannel());
         else
             return Optional.empty();
     }
 
-    public boolean isBotInVoiceChannel(IGuild guild) {
+    private boolean isBotInVoiceChannel(IGuild guild) {
         return guild.getClient().getConnectedVoiceChannels().stream().anyMatch(channel -> channel.getGuild().equals(guild));
     }
 
-    public void noShutUp(){
+    private void noShutUp(){
         if(shutUpChannel != null) {
             AudioPlayer.getAudioPlayerForGuild(shutUpChannel.getGuild()).clear();
             shutUpChannel.leave();
@@ -127,7 +124,7 @@ public class ShutUp {
         speakingUsers.clear();
     }
 
-    public void checkSpamming(){
+    private void checkSpamming(){
         if(shutUpMode && shutUpChannel != null) {
             AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(shutUpChannel.getGuild());
             if(speakingUsers.isEmpty()){
@@ -137,9 +134,7 @@ public class ShutUp {
                     try {
                         player.setLoop(true);
                         player.queue(SHUTUP_SOUND);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedAudioFileException e) {
+                    } catch (IOException | UnsupportedAudioFileException e) {
                         e.printStackTrace();
                     }
                 } else {

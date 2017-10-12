@@ -6,12 +6,20 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RequestBuffer;
 
-public class Util {
-	
-	public static File botPath;
+class Util {
+
+	private static IDiscordClient client;
+
+	static File botPath;
 
 	static {
 		try {
@@ -40,16 +48,28 @@ public class Util {
 		}
 	}
 
-	public static void sendMessage(IChannel channel, String message){
+	static void sendMessage(IChannel channel, String message){
 		try {
 			channel.sendMessage(message);
-		} catch(Exception e){}
+		} catch(Exception ignored){}
 	}
 
-	public static void deleteMessage(IMessage message) {
+	static void deleteMessage(IMessage message) {
 		try {
 			message.delete();
-		} catch(Exception e) {}
+		} catch(Exception ignored) {}
 	}
-	
+
+	static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
+		RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
+			try {
+				return new MessageBuilder(client).withEmbed(embedObject).withChannel(channel).send();
+			} catch (MissingPermissionsException | DiscordException e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
+		return future.get();
+	}
+
 }

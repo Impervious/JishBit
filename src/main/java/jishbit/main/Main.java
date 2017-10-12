@@ -8,13 +8,11 @@ import com.github.jreddit.utils.restclient.RestClient;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionEvent;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -29,7 +27,7 @@ public class Main {
 
 	public static Main bot;
 
-	public static IDiscordClient client;
+	private static IDiscordClient client;
 	public static IGuild guild;
 
 	/**
@@ -38,7 +36,8 @@ public class Main {
 	 */
 	private List<String> submittedMemes = new ArrayList<>();
 
-	public RestClient restClient;
+
+	private RestClient restClient;
 	String userAgent = "JishBit";
 	String clientID = "XAdloE1QjMnMyyjZjMtrhqao_1c";
 	String redirectURI = "www.google.ca";
@@ -49,14 +48,14 @@ public class Main {
 		bot = new Main();
 	}
 
-	public Main() {
+	private Main() {
 		restClient = new HttpRestClient();
 		restClient.setUserAgent("JishBit");
 		connect();
 		client.getDispatcher().registerListener(this);
 	}
 
-	public void connect() {
+	private void connect() {
 		Optional<String> token = Util.getBotToken();
 		if (!token.isPresent()) {
 			System.out.println("Add your token to token.txt");
@@ -77,7 +76,7 @@ public class Main {
 	@EventSubscriber
 	public void onReadyEvent(ReadyEvent e) {
 
-		new ShutUp(this, e.getClient());
+		new ShutUp(e.getClient());
 
 		System.out.println("Connected.");
 		client.changePlayingText("Memes");
@@ -151,10 +150,10 @@ public class Main {
 			    builder.withUrl(linkolio.replaceAll("&amp;", "&"));
 			    builder.withImage(linkolio.replaceAll("&amp;", "&"));
 
-                IMessage ourMessage = sendEmbed(event.getChannel(), builder.build());
+                IMessage ourMessage = Util.sendEmbed(event.getChannel(), builder.build());
 
-                ReactionEmoji dootdoot = ReactionEmoji.of("dootdoot", 304371941752700930l);
-                ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
+                ReactionEmoji dootdoot = ReactionEmoji.of("dootdoot", 304371941752700930L);
+                ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184L);
                 RequestBuffer.request(() -> ourMessage.addReaction(downdoot));
                 RequestBuffer.request(() -> ourMessage.addReaction(dootdoot));
 			}
@@ -179,28 +178,16 @@ public class Main {
 		}
 	}
 
-    public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
-        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
-            try {
-                return new MessageBuilder(client).withEmbed(embedObject).withChannel(channel).send();
-            } catch (MissingPermissionsException | DiscordException e) {
-                e.printStackTrace();
-            }
-            return null;
-         });
-        return future.get();
-	}
-
     @EventSubscriber
     public void onReactEvent(ReactionEvent event) {
 		if(event.getReaction() != null) {
 			IMessage message = event.getMessage();
 			IUser author = event.getAuthor();
-			IUser reacter = event.getUser();
+			IUser reactor = event.getUser();
 			int count = event.getReaction().getUsers().size(); //workaround because event.getCount() is broke af
-			if (author.getStringID().equals(client.getOurUser().getStringID()) && !reacter.isBot()) { //if message reacted to is from the bot
+			if (author.getStringID().equals(client.getOurUser().getStringID()) && !reactor.isBot()) { //if message reacted to is from the bot
 				ReactionEmoji emojiUsed = event.getReaction().getEmoji();
-				ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184l);
+				ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184L);
 				if (emojiUsed.getLongID() == downdoot.getLongID()) {
 					if (count >= 3) {
 						System.out.println(count);
@@ -215,7 +202,7 @@ public class Main {
 	/**
 	 * Recursive function to find a random meme
 	 */
-	public Submission findMeme(int functionAttempt){
+	private Submission findMeme(int functionAttempt){
 
 		Subs sub = Subs.getRandomSubreddit();
 		String subToUse = sub.subreddit;
@@ -247,7 +234,7 @@ public class Main {
 		return submissionToUse;
 	}
 
-	public void addMeme(String Url){
+	private void addMeme(String Url){
 		//remove first element (earliest added meme) when list becomes too big
 		if(submittedMemes.size() >= 100) submittedMemes.remove(0);
 		submittedMemes.add(Url);
