@@ -71,7 +71,7 @@ public class IPAAMessageEvent {
 
         if(server.equals("73463428634648576")) {
             String leftGuy = e.getUser().toString();
-            Util.sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), leftGuy + " left in salt lol.");
+            Util.sendMessage(e.getClient().getChannelByID(73463428634648576L), leftGuy + " left in salt lol.");
             System.out.println("User left");
         } else {
             System.out.println("User left");
@@ -84,7 +84,7 @@ public class IPAAMessageEvent {
         IUser joinGuy = e.getUser();
         String user = e.getUser().getStringID();
         String server = e.getGuild().getStringID();
-        Util.sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), "Holy fuck look who's back it's " + joinGuy.toString());
+        Util.sendMessage(e.getClient().getChannelByID(73463428634648576L), "Holy fuck look who's back it's " + joinGuy.toString());
 
         if(server.equals("73463428634648576")) {
             Roles role = Roles.getUserRole(user);
@@ -93,7 +93,7 @@ public class IPAAMessageEvent {
                 try {
                     e.getGuild().editUserRoles(joinGuy, roles);
                     e.getGuild().setUserNickname(joinGuy, role.nick);
-                    Util.sendMessage(e.getClient().getChannelByID(Long.parseLong("73463428634648576")), joinGuy.toString() + "'s perms were updated.");
+                    Util.sendMessage(e.getClient().getChannelByID(73463428634648576L), joinGuy.toString() + "'s perms were updated.");
                 } catch(RateLimitException | MissingPermissionsException e1) {
                     e1.printStackTrace();
                 }

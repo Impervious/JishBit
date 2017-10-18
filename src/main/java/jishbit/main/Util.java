@@ -15,7 +15,7 @@ import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
-class Util {
+public class Util {
 
 	private static IDiscordClient client;
 
@@ -23,7 +23,7 @@ class Util {
 
 	static {
 		try {
-			botPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
+			botPath = new File(JishBit.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
@@ -48,19 +48,19 @@ class Util {
 		}
 	}
 
-	static void sendMessage(IChannel channel, String message){
+	public static void sendMessage(IChannel channel, String message){
 		try {
 			channel.sendMessage(message);
 		} catch(Exception ignored){}
 	}
 
-	static void deleteMessage(IMessage message) {
+	public static void deleteMessage(IMessage message) {
 		try {
 			message.delete();
 		} catch(Exception ignored) {}
 	}
 
-	static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
+	public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
 		RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
 			try {
 				return new MessageBuilder(client).withEmbed(embedObject).withChannel(channel).send();
