@@ -1,4 +1,4 @@
-package jishbit.main;
+package jish;
 
 import java.util.Random;
 

@@ -38,6 +38,12 @@
         <artifactId>jreddit</artifactId>
         <version>1.0.3</version>
 	</dependency>
+
+    <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.9-RC1</version>
+    </dependency>
 	
  </dependencies> 
  
@@ -59,7 +65,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>jishbit.main.JishBit</mainClass>
+                            <mainClass>jish.JishBit</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>

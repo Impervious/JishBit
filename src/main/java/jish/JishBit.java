@@ -1,8 +1,7 @@
-package jishbit.main;
+package jish;
 
-import com.github.jreddit.utils.restclient.HttpRestClient;
-import com.github.jreddit.utils.restclient.RestClient;
-import jishbit.main.commands.*;
+import jish.commands.Command;
+import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -29,6 +28,7 @@ public class JishBit {
 
 	private static IDiscordClient client;
 	public static IGuild guild;
+	public static MemeManager meme;
 
 	private List<Command> registeredCommands = new ArrayList<>();
 
@@ -39,14 +39,9 @@ public class JishBit {
 	}
 
 	private JishBit() {
-
-		registerCommand(new CommandList());
-		registerCommand(new CommandMeme());
-		registerCommand(new CommandName());
-		registerCommand(new CommandStatus());
-
-		RestClient restClient = new HttpRestClient();
-		restClient.setUserAgent("JishBit");
+		bot = this;
+		registerAllCommands();
+		meme = new MemeManager();
 
 		connect();
 		client.getDispatcher().registerListener(this);
@@ -119,11 +114,25 @@ public class JishBit {
 		}
 	}
 
-	public void registerCommand(Command command) {
-		if(!registeredCommands.contains(command)) {
-			registeredCommands.add(command);
-			System.out.println("Registered Command: " + command.getName());
-		}
+	private void registerAllCommands() {
+		new Reflections("jish.commands").getSubTypesOf(Command.class).forEach(commandImpl -> {
+			try {
+				Command command = commandImpl.newInstance();
+				Optional<Command> existingCommand = registeredCommands.stream().filter(cmd -> cmd.getName().equalsIgnoreCase(command.getName())).findAny();
+				if (!existingCommand.isPresent()) {
+					registeredCommands.add(command);
+					System.out.println("Registered command: " + command.getName());
+				} else {
+					System.out.println("Attempted to register two commands with the same name: " + existingCommand.get().getName());
+					System.out.println("Existing: " + existingCommand.get().getClass().getName());
+					System.out.println("Attempted: " + commandImpl.getName());
+				}
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
     @EventSubscriber
@@ -162,5 +171,9 @@ public class JishBit {
 		builder.withTimestamp(System.currentTimeMillis());
 
 		RequestBuffer.request(() -> e.getChannel().sendMessage(builder.build()));
+	}
+
+	public MemeManager getMemeManager() {
+		return meme;
 	}
 }

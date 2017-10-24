@@ -1,7 +1,7 @@
-package jishbit.main.commands;
+package jish.commands;
 
-import jishbit.main.JishBit;
-import jishbit.main.Util;
+import jish.JishBit;
+import jish.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
