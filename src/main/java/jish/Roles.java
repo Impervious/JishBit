@@ -11,21 +11,21 @@ public enum Roles {
     CAMERON("270992426590666773", "270994427898494977", "193972344312692736", "Cameron"),
     TEST("194959408243933186", "109113911038464000", "193972344312692736", "Test");
 
-    public String user;
-    public String role;
+    public String userID;
+    public String roleID;
     public String human;
     public String nick;
 
-    Roles(String user, String role, String human, String nick) {
-        this.user = user;
-        this.role = role;
+    Roles(String userID, String roleID, String human, String nick) {
+        this.userID = userID;
+        this.roleID = roleID;
         this.human = human;
         this.nick = nick;
     }
 
     public static Roles getUserRole(String user) {
         for (Roles role : values()) {
-            if (role.user.equalsIgnoreCase(user)) {
+            if (role.userID.equalsIgnoreCase(user)) {
                 return role;
             }
         }
