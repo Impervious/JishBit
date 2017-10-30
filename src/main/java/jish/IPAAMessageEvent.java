@@ -11,12 +11,12 @@ import sx.blah.discord.util.RequestBuffer;
 
 public class IPAAMessageEvent {
     @EventSubscriber
-    public void userLeft(UserLeaveEvent e) {
-        String server = e.getGuild().getStringID();
+    public void userLeft(UserLeaveEvent event) {
+        String server = event.getGuild().getStringID();
 
         if (server.equals("73463428634648576")) {
-            String leftGuy = e.getUser().toString();
-            Util.sendMessage(e.getClient().getChannelByID(73463428634648576L), leftGuy + " left in salt lol.");
+            String leftGuy = event.getUser().toString();
+            Util.sendMessage(event.getClient().getChannelByID(73463428634648576L), leftGuy + " left in salt lol.");
             System.out.println("User left");
         } else {
             System.out.println("User left");
