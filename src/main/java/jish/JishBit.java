@@ -34,6 +34,8 @@ public class JishBit {
 
 	private static final Pattern COMMAND_PATTERN = Pattern.compile("^`([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
+	public static final long IPA_GLD_ID = 73463428634648576L;
+
 	public static void main(String[] args) throws Exception {
 		bot = new JishBit();
 	}
