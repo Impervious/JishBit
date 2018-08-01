@@ -8,33 +8,28 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionEvent;
 import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
-import sx.blah.discord.handle.impl.obj.ReactionEmoji;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JishBit {
 
-	public static JishBit bot;
+	private static JishBit bot;
 
-	private static IDiscordClient client;
+	private IDiscordClient client;
 	public static IGuild guild;
-	public static MemeManager meme;
 
 	private List<Command> registeredCommands = new ArrayList<>();
 
 	private static final Pattern COMMAND_PATTERN = Pattern.compile("^`([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
-	public static final long IPA_GLD_ID = 73463428634648576L;
+	public static final long MAIN_CH_ID = 73463428634648576L;
+
+	public static final long HUB_LOG_CH_ID = 247394948331077632L;
 
 	public static void main(String[] args) throws Exception {
 		bot = new JishBit();
@@ -43,7 +38,6 @@ public class JishBit {
 	private JishBit() {
 		bot = this;
 		registerAllCommands();
-		meme = new MemeManager();
 
 		connect();
 		client.getDispatcher().registerListener(this);
@@ -67,13 +61,22 @@ public class JishBit {
 		}
 	}
 
+	public static JishBit getInstance() {
+		return bot;
+	}
+
+	public static IDiscordClient getClient() {
+		return bot.client;
+	}
+
 	@EventSubscriber
 	public void onReadyEvent(ReadyEvent e) {
 
 		new ShutUp(e.getClient());
+		client = e.getClient();
 
 		System.out.println("Connected.");
-		client.changePlayingText("Memes");
+		client.changePresence(StatusType.ONLINE, ActivityType.WATCHING, "Memes");
 	}
 
 	@EventSubscriber
@@ -129,53 +132,32 @@ public class JishBit {
 					System.out.println("Existing: " + existingCommand.get().getClass().getName());
 					System.out.println("Attempted: " + commandImpl.getName());
 				}
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		});
 	}
 
-    @EventSubscriber
-    public void onReactEvent(ReactionEvent event) {
-		if(event.getReaction() != null) {
-			IMessage message = event.getMessage();
-			IUser author = event.getAuthor();
-			IUser reactor = event.getUser();
-			int count = event.getReaction().getUsers().size(); //workaround because event.getCount() is broke af
-			if (author.getStringID().equals(client.getOurUser().getStringID()) && !reactor.isBot()) { //if message reacted to is from the bot
-				ReactionEmoji emojiUsed = event.getReaction().getEmoji();
-				ReactionEmoji downdoot = ReactionEmoji.of("downdoot", 365934862181597184L);
-				if (emojiUsed.getLongID() == downdoot.getLongID()) {
-					if (count >= 3) {
-						System.out.println(count);
-						Util.deleteMessage(message);
-						Util.sendMessage(event.getChannel(), "Deleted that weak meme.");
-					}
-				}
-			}
-		}
-    }
-
 	@EventSubscriber
 	public void botMention(MentionEvent e) {
 		IMessage msg = e.getMessage();
 
-		EmbedBuilder builder = new EmbedBuilder();
+		List<String> responses = new ArrayList<>();
+		responses.add("what?");
+		responses.add("wtf do you want?");
+		responses.add("stop mentioning me");
+		responses.add("omg what?" + " " + msg.getAuthor().mention());
 
-		builder.withAuthorName("JishBit");
-		builder.withAuthorIcon("https://i.imgur.com/QRVYlDC.png");
-		builder.appendField("suh", "Hello I am RLCompBot. I was created by <@73463573900173312>", false);
-		builder.appendField("What do I do?", "Right now I greet new members to the server and assign roles and platforms! I plan on maybe doing more in the future.", false);
-		builder.appendField("Source Code: ", "[`GitHub`](https://github.com/Impervious/JishBit)", true);
-		builder.withColor(255, 30, 229);
-		builder.withTimestamp(System.currentTimeMillis());
+		Random random = new Random();
+		int size = random.nextInt(responses.size());
+		String item = responses.get(size);
+		//Util.sendMessage(e.getChannel(), item);
+		Util.botLog(msg);
 
-		RequestBuffer.request(() -> e.getChannel().sendMessage(builder.build()));
-	}
-
-	public MemeManager getMemeManager() {
-		return meme;
+		if (msg.getAuthor().getStringID().equals("73463573900173312")) {
+			Util.sendMessage(e.getChannel(), "Hi daddy <3");
+		} else {
+			Util.sendMessage(e.getChannel(), item);
+		}
 	}
 }

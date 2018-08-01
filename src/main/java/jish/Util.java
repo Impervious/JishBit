@@ -6,18 +6,12 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.*;
 
 public class Util {
-
-	private static IDiscordClient client;
 
 	static File botPath;
 
@@ -63,13 +57,33 @@ public class Util {
 	public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
 		RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
 			try {
-				return new MessageBuilder(client).withEmbed(embedObject).withChannel(channel).send();
+				return new MessageBuilder(JishBit.getClient()).withEmbed(embedObject).withChannel(channel).send();
 			} catch (MissingPermissionsException | DiscordException e) {
 				e.printStackTrace();
 			}
 			return null;
 		});
 		return future.get();
+	}
+
+
+	public static void botLog(IMessage msg) {
+		try {
+			IChannel logChannel = msg.getChannel();
+			//IChannel logChannel = client.getChannelByID(JishBit.HUB_LOG_CH_ID);
+
+			EmbedBuilder bld = new EmbedBuilder()
+					.withColor(255,255,255)
+					.withAuthorName(msg.getAuthor().getName() + '#' + msg.getAuthor().getDiscriminator())
+					.withAuthorIcon(msg.getAuthor().getAvatar())
+					.withDesc(msg.getFormattedContent())
+					.withFooterText(msg.getGuild().getName() + "/#" + msg.getChannel().getName())
+					.withTimestamp(System.currentTimeMillis());
+
+			sendEmbed(logChannel, bld.build());
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 }
