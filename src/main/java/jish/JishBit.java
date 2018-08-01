@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 public class JishBit {
 
 	private static JishBit bot;
+	private static IDiscordClient client;
 
-	private IDiscordClient client;
 	public static IGuild guild;
 
 	private List<Command> registeredCommands = new ArrayList<>();
@@ -32,7 +32,7 @@ public class JishBit {
 	public static final long HUB_LOG_CH_ID = 247394948331077632L;
 
 	public static void main(String[] args) throws Exception {
-		bot = new JishBit();
+		new JishBit();
 	}
 
 	private JishBit() {
@@ -51,11 +51,12 @@ public class JishBit {
 			System.exit(0);
 			return;
 		}
-		ClientBuilder cB = new ClientBuilder();
-		cB.withToken(token.get());
-		cB.setMaxReconnectAttempts(50);
+
+		ClientBuilder clientBuilder = new ClientBuilder();
+		clientBuilder.withToken(token.get());
+		clientBuilder.setMaxReconnectAttempts(5);
 		try {
-			client = cB.login();
+			client = clientBuilder.login();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 		}
@@ -66,14 +67,13 @@ public class JishBit {
 	}
 
 	public static IDiscordClient getClient() {
-		return bot.client;
+		return client;
 	}
 
 	@EventSubscriber
 	public void onReadyEvent(ReadyEvent e) {
-
-		new ShutUp(e.getClient());
 		client = e.getClient();
+		new ShutUp(client);
 
 		System.out.println("Connected.");
 		client.changePresence(StatusType.ONLINE, ActivityType.WATCHING, "Memes");
