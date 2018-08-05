@@ -15,6 +15,7 @@ public class CommandName implements Command  {
     @Override
     public void execute(JishBit bot, IDiscordClient client, String[] args, IGuild guild, IMessage msg, boolean isPrivate) {
         if(!isPrivate) {
+            Util.botLog(msg);
             Util.deleteMessage(msg);
             if(msg.getAuthor().getStringID().equals("73463573900173312")) {
                 try {

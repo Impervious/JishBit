@@ -14,6 +14,7 @@ public class CommandList implements Command  {
 
     @Override
     public void execute(JishBit bot, IDiscordClient client, String[] args, IGuild guild, IMessage msg, boolean isPrivate) {
+        Util.botLog(msg);
         Util.sendMessage(msg.getChannel(), "**Commands** \n `` `status <message>`` - Changes the status of the bot \n `` `meme`` - Posts a dank meme");
     }
 }

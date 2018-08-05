@@ -31,6 +31,7 @@ public class CommandColor implements Command {
                 try {
                     Color newColor = Color.decode(args[0]);
                     userRole.changeColor(newColor);
+                    Util.sendMessage(msg.getChannel(), "Your color has been changed to #" + getCurrentColor(userRole));
                 } catch (RateLimitException | DiscordException | MissingPermissionsException e) {
                     e.printStackTrace();
                 }
@@ -41,6 +42,7 @@ public class CommandColor implements Command {
             sendArgsError(msg.getChannel());
         }
         Util.deleteMessage(msg);
+        Util.botLog(msg);
     }
 
     private String getCurrentColor(IRole role) {
@@ -52,6 +54,6 @@ public class CommandColor implements Command {
     }
 
     private void sendArgsError(IChannel ch) {
-        Util.sendMessage(ch, "Error: You did a wrong argument I think...");
+        Util.sendMessage(ch, "Incorrect Syntax: `color <current|#HEXHERE>");
     }
 }

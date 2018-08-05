@@ -50,6 +50,14 @@ public class Util {
         }
     }
 
+    public static void sendMessage(IChannel channel, StringBuilder builder) {
+        try {
+            channel.sendMessage(String.valueOf(builder));
+        } catch (Exception ignored) {
+
+        }
+    }
+
     public static void deleteMessage(IMessage message) {
         try {
             message.delete();
@@ -60,7 +68,7 @@ public class Util {
     public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
         RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
             try {
-                return new MessageBuilder(JishBit.getInstance().getClient()).withEmbed(embedObject)
+                return new MessageBuilder(JishBit.getClient()).withEmbed(embedObject)
                         .withChannel(channel).send();
             } catch (MissingPermissionsException | DiscordException e) {
                 e.printStackTrace();
@@ -70,14 +78,27 @@ public class Util {
         return future.get();
     }
 
+    public static void sendEmbed(IChannel channel, String message) {
+        sendEmbed(channel, new EmbedBuilder()
+                .withDesc(message)
+                .withAuthorName(channel.getClient().getOurUser().getName() + '#' + channel.getClient().getOurUser().getDiscriminator())
+                .withAuthorIcon(channel.getClient().getOurUser().getAvatarURL())
+                .withColor(32, 102, 148)
+                .withTimestamp(System.currentTimeMillis())
+                .build());
+    }
+
+
+    /*
+     *  BOT LOG FOR USER MESSAGES
+     */
 
     public static void botLog(IMessage msg) {
         try {
-            IChannel logChannel = msg.getChannel();
-            //IChannel logChannel = client.getChannelByID(JishBit.HUB_LOG_CH_ID);
+            IChannel logChannel = JishBit.getClient().getChannelByID(JishBit.HUB_LOG_CH_ID);
 
             EmbedBuilder bld = new EmbedBuilder()
-                    .withColor(255, 255, 255)
+                    .withColor(32, 102, 148)
                     .withAuthorName(msg.getAuthor().getName() + '#' + msg.getAuthor().getDiscriminator())
                     .withAuthorIcon(msg.getAuthor().getAvatarURL())
                     .withDesc(msg.getFormattedContent())
@@ -86,6 +107,21 @@ public class Util {
 
             sendEmbed(logChannel, bld.build());
         } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /*
+     *  BOT LOG FOR BOT MESSAGES
+     */
+
+    public static void botLog(String string) {
+        try {
+            IChannel logChannel = JishBit.getClient().getChannelByID(JishBit.HUB_LOG_CH_ID);
+
+            StringBuilder bld = new StringBuilder().append(string);
+            sendMessage(logChannel, bld);
+        } catch(Exception ex) {
             ex.printStackTrace();
         }
     }

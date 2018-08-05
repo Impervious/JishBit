@@ -1,6 +1,12 @@
 package jish;
 
 import jish.commands.Command;
+import jish.scheduled.WeedMessage;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
 import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -13,8 +19,13 @@ import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class JishBit {
 
@@ -22,16 +33,39 @@ public class JishBit {
 	private static IDiscordClient client;
 
 	public static IGuild guild;
+	public static IRole role;
+
+	private Calendar calendar = Calendar.getInstance();
+
+	public Scheduler scheduler;
+
+	{
+		try {
+			scheduler = StdSchedulerFactory.getDefaultScheduler();
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	private List<Command> registeredCommands = new ArrayList<>();
 
 	private static final Pattern COMMAND_PATTERN = Pattern.compile("^`([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
+	/*
+	 * IPA CHANNELS
+	 */
+
 	public static final long MAIN_CH_ID = 73463428634648576L;
 
-	public static final long HUB_LOG_CH_ID = 247394948331077632L;
+	/*
+	 * HUB SERVER CHANNELS
+	 */
 
-	public static void main(String[] args) throws Exception {
+	public static final long HUB_MAIN_CH_ID = 247394948331077632L;
+	public static final long HUB_LOG_CH_ID = 473993256372404243L;
+
+	public static void main(String[] args) {
 		new JishBit();
 	}
 
@@ -54,7 +88,7 @@ public class JishBit {
 
 		ClientBuilder clientBuilder = new ClientBuilder();
 		clientBuilder.withToken(token.get());
-		clientBuilder.setMaxReconnectAttempts(5);
+		clientBuilder.setMaxReconnectAttempts(50);
 		try {
 			client = clientBuilder.login();
 		} catch (DiscordException e) {
@@ -74,13 +108,21 @@ public class JishBit {
 	public void onReadyEvent(ReadyEvent e) {
 		client = e.getClient();
 		new ShutUp(client);
+		try {
+			weedMessage();
+			scheduler.start();
+		} catch (SchedulerException ex) {
+			ex.printStackTrace();
+		}
+
 
 		System.out.println("Connected.");
-		client.changePresence(StatusType.ONLINE, ActivityType.WATCHING, "Memes");
+		client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, "Memes");
 	}
 
 	@EventSubscriber
 	public void onDisconnectEvent(DisconnectedEvent event) {
+		Util.botLog("Bot has been shut down because " + event.getReason());
 		System.out.println("BOT DISCONNECTED");
 		System.out.println("Reason: " + event.getReason());
 	}
@@ -151,8 +193,8 @@ public class JishBit {
 		Random random = new Random();
 		int size = random.nextInt(responses.size());
 		String item = responses.get(size);
-		//Util.sendMessage(e.getChannel(), item);
 		Util.botLog(msg);
+		Util.sendMessage(client.getChannelByID(HUB_LOG_CH_ID), "w");
 
 		if (msg.getAuthor().getStringID().equals("73463573900173312")) {
 			Util.sendMessage(e.getChannel(), "Hi daddy <3");
@@ -160,4 +202,31 @@ public class JishBit {
 			Util.sendMessage(e.getChannel(), item);
 		}
 	}
+	public void weedMessage() throws SchedulerException {
+
+		/*
+		 *  4:20
+		 */
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 16);
+		calendar.set(Calendar.MINUTE, 20);
+		calendar.set(Calendar.SECOND, 0);
+		Date date = calendar.getTime();
+
+		JobDetail job = newJob(WeedMessage.class)
+				.withIdentity("420Job", "weedGroup")
+				.build();
+
+		Trigger trigger = newTrigger()
+				.withIdentity("420Trigger", "weedGroup")
+				.startAt(date)
+				.withSchedule(simpleSchedule()
+				.withIntervalInSeconds(86400) // 86400 = 1 day
+				.repeatForever())
+				.build();
+
+		scheduler.scheduleJob(job, trigger);
+	}
+
 }
