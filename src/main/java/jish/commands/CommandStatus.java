@@ -1,6 +1,7 @@
 package jish.commands;
 
 import jish.JishBit;
+import jish.Roles;
 import jish.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.ActivityType;
@@ -19,7 +20,7 @@ public class CommandStatus implements Command  {
         if(!isPrivate) {
             Util.botLog(msg);
             Util.deleteMessage(msg);
-            if(msg.getAuthor().getStringID().equals("73463573900173312")) {
+            if(msg.getAuthor().getStringID().equals(Roles.JOSH.userID)) {
                 try {
                     String status = msg.getContent().split(" ", 2)[1];
                     client.changePresence(StatusType.ONLINE, ActivityType.WATCHING, status);

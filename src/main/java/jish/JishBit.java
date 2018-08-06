@@ -2,12 +2,15 @@ package jish;
 
 import jish.commands.Command;
 import jish.scheduled.WeedMessage;
+
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+
 import org.reflections.Reflections;
+
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -35,8 +38,6 @@ public class JishBit {
 	public static IGuild guild;
 	public static IRole role;
 
-	private Calendar calendar = Calendar.getInstance();
-
 	public Scheduler scheduler;
 
 	{
@@ -56,7 +57,7 @@ public class JishBit {
 	 * IPA CHANNELS
 	 */
 
-	public static final long MAIN_CH_ID = 73463428634648576L;
+	public static final long IPA_MAIN_CH_ID = 73463428634648576L;
 
 	/*
 	 * HUB SERVER CHANNELS
@@ -153,7 +154,7 @@ public class JishBit {
 		if(text.equalsIgnoreCase("good bot")) {
 			Util.sendMessage(msg.getChannel(), ":D");
 		} else if(text.equalsIgnoreCase("bad bot")) {
-			if(msg.getAuthor().getStringID().equals("109109946565537792")) {
+			if(msg.getAuthor().getStringID().equals(Roles.TROY.userID)) {
 				Util.sendMessage(msg.getChannel(), "Leave me alone troy.");
 			} else {
 				Util.sendMessage(msg.getChannel(), "D:");
@@ -194,9 +195,8 @@ public class JishBit {
 		int size = random.nextInt(responses.size());
 		String item = responses.get(size);
 		Util.botLog(msg);
-		Util.sendMessage(client.getChannelByID(HUB_LOG_CH_ID), "w");
 
-		if (msg.getAuthor().getStringID().equals("73463573900173312")) {
+		if (msg.getAuthor().getStringID().equals(Roles.JOSH.userID)) {
 			Util.sendMessage(e.getChannel(), "Hi daddy <3");
 		} else {
 			Util.sendMessage(e.getChannel(), item);

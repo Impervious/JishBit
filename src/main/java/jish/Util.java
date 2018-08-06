@@ -1,9 +1,11 @@
 package jish;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -14,6 +16,21 @@ import sx.blah.discord.util.*;
 public class Util {
 
     static File botPath;
+
+    private File factFile = new File(botPath, "facts.txt");
+    private BufferedReader in;
+
+    {
+        try {
+            in = new BufferedReader(new FileReader(factFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String item;
+
+    private static List<String> list = new ArrayList<>();
 
     static {
         try {
@@ -43,6 +60,23 @@ public class Util {
         }
     }
 
+    public void randomFacts() throws IOException {
+        String str;
+        while ((str = in.readLine()) != null) {
+            list.add(str);
+        }
+
+        String[] stringArr = list.toArray(new String[0]);
+
+        Random random = new Random();
+        int size = random.nextInt(list.size());
+        item = list.get(size);
+    }
+
+    public static String getFact() {
+        return item;
+    }
+
     public static void sendMessage(IChannel channel, String message) {
         try {
             channel.sendMessage(message);
@@ -65,6 +99,11 @@ public class Util {
         }
     }
 
+    /*
+     *  ADVANCED EMBED
+     */
+
+    @SuppressWarnings("all")
     public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
         RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
             try {
@@ -77,6 +116,10 @@ public class Util {
         });
         return future.get();
     }
+
+    /*
+     *  SIMPLE EMBED
+     */
 
     public static void sendEmbed(IChannel channel, String message) {
         sendEmbed(channel, new EmbedBuilder()
