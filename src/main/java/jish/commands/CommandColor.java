@@ -13,6 +13,7 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 import java.awt.*;
+import java.util.Random;
 
 public class CommandColor implements Command {
     @Override
@@ -35,6 +36,13 @@ public class CommandColor implements Command {
                 } catch (RateLimitException | DiscordException | MissingPermissionsException e) {
                     e.printStackTrace();
                 }
+            } else if(args[0].equalsIgnoreCase("random")) {
+                Random random = new Random();
+                int nextInt = random.nextInt(256*256*256);
+                String colorCode = String.format("#%06x", nextInt);
+                Color newColor = Color.decode(colorCode);
+                userRole.changeColor(newColor);
+                Util.sendMessage(msg.getChannel(), "Your new color is #" + getCurrentColor(userRole));
             } else {
                 sendArgsError(msg.getChannel());
             }
@@ -54,6 +62,6 @@ public class CommandColor implements Command {
     }
 
     private void sendArgsError(IChannel ch) {
-        Util.sendMessage(ch, "Incorrect Syntax: `color <current|#HEXHERE>");
+        Util.sendMessage(ch, "Incorrect Syntax: `color <current|random|#HEX GOES HERE>");
     }
 }
