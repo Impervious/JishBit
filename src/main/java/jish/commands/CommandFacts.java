@@ -15,7 +15,9 @@ public class CommandFacts implements Command {
 	@Override
 	public void execute(JishBit bot, IDiscordClient client, String[] args, IGuild guild, IMessage msg, boolean isPrivate) {
 		try {
-			Util.sendMessage(client.getChannelByID(JishBit.HUB_MAIN_CH_ID), Util.getFact());
+			Util.botLog(msg);
+			Util.deleteMessage(msg);
+			Util.sendMessage(msg.getChannel(), Util.randomFacts());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

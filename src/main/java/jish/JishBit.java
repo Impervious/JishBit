@@ -212,6 +212,7 @@ public class JishBit {
 		calendar.set(Calendar.HOUR_OF_DAY, 16);
 		calendar.set(Calendar.MINUTE, 20);
 		calendar.set(Calendar.SECOND, 0);
+		calendar.setTimeZone(TimeZone.getDefault());
 		Date date = calendar.getTime();
 
 		JobDetail job = newJob(WeedMessage.class)
@@ -228,5 +229,4 @@ public class JishBit {
 
 		scheduler.scheduleJob(job, trigger);
 	}
-
 }

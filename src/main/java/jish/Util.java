@@ -2,10 +2,7 @@ package jish;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -16,21 +13,6 @@ import sx.blah.discord.util.*;
 public class Util {
 
     static File botPath;
-
-    private File factFile = new File(botPath, "facts.txt");
-    private BufferedReader in;
-
-    {
-        try {
-            in = new BufferedReader(new FileReader(factFile));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String item;
-
-    private static List<String> list = new ArrayList<>();
 
     static {
         try {
@@ -60,21 +42,15 @@ public class Util {
         }
     }
 
-    public void randomFacts() throws IOException {
-        String str;
-        while ((str = in.readLine()) != null) {
-            list.add(str);
-        }
-
-        String[] stringArr = list.toArray(new String[0]);
+    @SuppressWarnings("deprecation")
+    public static String randomFacts() throws IOException {
+        File factFile = new File(botPath + "/facts.txt");
+        List<String> facts = FileUtils.readLines(factFile);
 
         Random random = new Random();
-        int size = random.nextInt(list.size());
-        item = list.get(size);
-    }
+        int size = random.nextInt(facts.size());
 
-    public static String getFact() {
-        return item;
+        return facts.get(size);
     }
 
     public static void sendMessage(IChannel channel, String message) {
