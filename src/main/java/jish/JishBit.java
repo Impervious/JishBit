@@ -118,7 +118,7 @@ public class JishBit {
 
 
 		System.out.println("Connected.");
-		client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, "Memes");
+		client.changePresence(StatusType.ONLINE, ActivityType.WATCHING, "Troy");
 	}
 
 	@EventSubscriber
@@ -147,13 +147,15 @@ public class JishBit {
 			if (command.isPresent()) {
 				String args = matcher.group(2);
 				String[] argsArr = args.isEmpty() ? new String[0] : args.split(" ");
-				command.get().execute(bot, client, argsArr, guild, msg, isPrivate);
+				command.get().execute(bot, client, argsArr, msg.getAuthor() ,guild, msg, isPrivate);
 			}
 		}
 
 		if(text.equalsIgnoreCase("good bot")) {
+			Util.botLog(msg);
 			Util.sendMessage(msg.getChannel(), ":D");
 		} else if(text.equalsIgnoreCase("bad bot")) {
+			Util.botLog(msg);
 			if(msg.getAuthor().getStringID().equals(Roles.TROY.userID)) {
 				Util.sendMessage(msg.getChannel(), "Leave me alone troy.");
 			} else {
@@ -202,6 +204,22 @@ public class JishBit {
 			Util.sendMessage(e.getChannel(), item);
 		}
 	}
+
+	/*private static int getOffset() {
+
+		TO-DO
+
+		//winter - 18000s
+		//summer - 14400s
+
+		boolean inSavingsTime = TimeZone.getTimeZone("US/Eastern").inDaylightTime( new Date() );
+		if (inSavingsTime) {
+			return 14400;
+		} else {
+			return 18000;
+		}
+	}*/
+
 	public void weedMessage() throws SchedulerException {
 
 		/*
@@ -209,10 +227,10 @@ public class JishBit {
 		 */
 
 		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getTimeZone("EST"));
 		calendar.set(Calendar.HOUR_OF_DAY, 16);
 		calendar.set(Calendar.MINUTE, 20);
 		calendar.set(Calendar.SECOND, 0);
-		calendar.setTimeZone(TimeZone.getDefault());
 		Date date = calendar.getTime();
 
 		JobDetail job = newJob(WeedMessage.class)
@@ -223,7 +241,7 @@ public class JishBit {
 				.withIdentity("420Trigger", "weedGroup")
 				.startAt(date)
 				.withSchedule(simpleSchedule()
-				.withIntervalInSeconds(86400) // 86400 = 1 day
+				.withIntervalInSeconds(100800) // 86400 = 1 day
 				.repeatForever())
 				.build();
 

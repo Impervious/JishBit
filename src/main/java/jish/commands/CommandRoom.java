@@ -5,6 +5,7 @@ import jish.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 public class CommandRoom implements Command {
     @Override
@@ -13,7 +14,7 @@ public class CommandRoom implements Command {
     }
 
     @Override
-    public void execute(JishBit bot, IDiscordClient client, String[] args, IGuild guild, IMessage msg, boolean isPrivate) {
+    public void execute(JishBit bot, IDiscordClient client, String[] args, IUser author, IGuild guild, IMessage msg, boolean isPrivate) {
         Util.botLog(msg);
 
         String reply;

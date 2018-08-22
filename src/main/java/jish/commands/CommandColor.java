@@ -4,10 +4,7 @@ import jish.JishBit;
 import jish.Roles;
 import jish.Util;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -22,12 +19,17 @@ public class CommandColor implements Command {
     }
 
     @Override
-    public void execute(JishBit bot, IDiscordClient client, String[] args, IGuild guild, IMessage msg, boolean isPrivate) {
+    public void execute(JishBit bot, IDiscordClient client, String[] args, IUser author ,IGuild guild, IMessage msg, boolean isPrivate) {
         Roles role = Roles.getUserRole(msg.getAuthor().getStringID());
+        IUser user = guild.getUserByID(Long.parseLong(args[1]));
         if (args.length == 1 && role != null) {
             IRole userRole = msg.getGuild().getRoleByID(Long.parseLong(role.roleID));
             if (args[0].equalsIgnoreCase("current")) {
-                Util.sendMessage(msg.getChannel(), "The current value of " + userRole.mention() + "'s color is #" + getCurrentColor(userRole));
+                if(!user.getStringID().equalsIgnoreCase(author.getStringID())) {
+                    Util.sendMessage(msg.getChannel(), "The current value of " + args[1] + "'s color is #" + getCurrentColor(userRole));
+                } else {
+                    Util.sendMessage(msg.getChannel(), "The current value of " + userRole.mention() + "'s color is #" + getCurrentColor(userRole));
+                }
             } else if (args[0].startsWith("#")) {
                 try {
                     Color newColor = Color.decode(args[0]);

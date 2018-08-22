@@ -20,7 +20,7 @@
 	<dependency>
 	    <groupId>com.github.austinv11</groupId>
 	    <artifactId>Discord4j</artifactId>
-	    <version>be2318c</version>
+	    <version>570a4d1</version>
 	</dependency>
     <dependency>
         <groupId>org.slf4j</groupId>
