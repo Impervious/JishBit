@@ -241,7 +241,7 @@ public class JishBit {
 				.withIdentity("420Trigger", "weedGroup")
 				.startAt(date)
 				.withSchedule(simpleSchedule()
-				.withIntervalInSeconds(97200) // 97,200 = 1 day + 4 hours. Because why find out why it's broken amirite?
+				.withIntervalInSeconds(97200) // 97,200 = 1 day + 4 hours. Because why find out why it's broken amirite??
 				.repeatForever())
 				.build();
 
