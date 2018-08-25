@@ -3,6 +3,7 @@ package jish;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -39,47 +40,6 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
             return Optional.empty();
-        }
-    }
-
-    /*
-     *  FACTS
-     */
-
-    static File factFile = new File(botPath + "/facts.txt");
-    static List<String> facts;
-
-    static {
-        try {
-            facts = FileUtils.readLines(factFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static Random random = new Random();
-    static int size = random.nextInt(facts.size());
-
-    @SuppressWarnings("deprecation")
-    public static String randomFacts() {
-
-        facts.remove(size);
-        System.out.println(facts.size());
-        return facts.get(size);
-    }
-
-    public static Integer arraySize() {
-        return facts.size();
-    }
-
-    public static void removeBlankLines() {
-        try {
-            List<String> lines = FileUtils.readLines(factFile);
-
-            lines.removeIf(line -> line.trim().isEmpty());
-            FileUtils.writeLines(new File(String.valueOf(factFile)), lines);
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -178,5 +138,4 @@ public class Util {
             ex.printStackTrace();
         }
     }
-
 }

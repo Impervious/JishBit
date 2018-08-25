@@ -21,10 +21,10 @@ public class CommandColor implements Command {
     @Override
     public void execute(JishBit bot, IDiscordClient client, String[] args, IUser author ,IGuild guild, IMessage msg, boolean isPrivate) {
         Roles role = Roles.getUserRole(msg.getAuthor().getStringID());
+        IRole userRole = msg.getGuild().getRoleByID(Long.parseLong(role.roleID));
+
         if (args.length == 1 && role != null) {
-            IRole userRole = msg.getGuild().getRoleByID(Long.parseLong(role.roleID));
             if (args[0].equalsIgnoreCase("current")) {
-	            //Util.sendMessage(msg.getChannel(), "I don't work anymore");
 	            Util.sendMessage(msg.getChannel(), "The current value of " + userRole.mention() + "'s color is #" + getCurrentColor(userRole));
             } else if (args[0].startsWith("#")) {
                 try {
@@ -40,7 +40,7 @@ public class CommandColor implements Command {
                 String colorCode = String.format("#%06x", nextInt);
                 Color newColor = Color.decode(colorCode);
                 userRole.changeColor(newColor);
-                Util.sendMessage(msg.getChannel(), "Your new color is #" + getCurrentColor(userRole));
+                Util.sendMessage(msg.getChannel(), userRole.mention() + " Your new color is #" + getCurrentColor(userRole));
             } else {
                 sendArgsError(msg.getChannel());
             }
