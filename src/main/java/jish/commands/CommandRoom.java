@@ -36,6 +36,6 @@ public class CommandRoom implements Command {
             roomName = "ipa";
         }
 
-        return "http://themediaserver.ddns.net:10081/ptweb/#/join?ptserver=http%3A%2F%2Fthemediaserver.ddns.net%3A10082&ptroom=" + roomName + "&owner=troyhayes50&ptpassword=pie";
+        return "http://themediaserver.ddns.net:10081/slweb/#/join?server=http%3A%2F%2Fthemediaserver.ddns.net%3A10082%2Fslserver&room=" + roomName +"&owner=troyhayes50&password=pie";
     }
 }
